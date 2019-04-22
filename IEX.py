@@ -19,12 +19,15 @@ from pytz import timezone
 import requests
 quotes = []
 
+
+
 def GetCurrentPrice(ticker):
     stockUrl = 'https://api.iextrading.com/1.0/stock/' \
     + str(ticker.lower()) + '/quote'
     current = "latestPrice"
     price = []
-    while datetime.datetime.now(timezone('US/Eastern')).minute <= 56:
+    
+    while datetime.datetime.now(timezone('US/Eastern')).minute <= 15:
         jsonData = requests.get(stockUrl).text
         response = json.loads(jsonData)
         quote = response[current]
@@ -35,11 +38,59 @@ def GetCurrentPrice(ticker):
         price.append(quote)
         
     return price
+ 
+current = GetCurrentPrice('mu')
+
+def GetCurrentPrice2(ticker):
+    stockUrl = 'https://api.iextrading.com/1.0/stock/' \
+    + str(ticker.lower()) + '/quote'
+    
+    
+    stockUrl = 'https://api.iextrading.com/1.0/stock/mu/quote'
+    
+    current = "latestPrice"
+    price = []
+    times = []
+    
+    ser = pd.Series()
+    
+    #creates the holding dataframe
+    daydf = pd.DataFrame(
+            {"price": []},
+            index=[])
+    
+    while datetime.datetime.now(timezone('US/Eastern')).minute <= 5:
+        jsonData = requests.get(stockUrl).text
+        response = json.loads(jsonData)
+        quote = response[current]
+        timeUS = datetime.datetime.now(timezone('US/Eastern')).strftime("%H:%M:%S")
+        print("Time: {} Price: {}".format(timeUS, quote))
+        time.sleep(15)
         
+        ser[timeUS] = price
+        
+        price.append(quote)
+        times.append(timeUS)
+        
+        
+        
+    daydf = daydf.append(pd.DataFrame({'price': price},index=times))
+    print("done")        
+    return daydf
+
+current = GetCurrentPrice2('mu')
+
+
+
+ser = pd.Series()
+ser[1] = current
+
+       
 def GetPrice(ticker):
     stockUrl = 'https://api.iextrading.com/1.0/stock/' + str(ticker.lower()) + '/chart/1m'
-    jsonData = requests.get(stockUrl).text
-    response = json.loads(jsonData)
+#    jsonData = requests.get(stockUrl).text
+#    response = json.loads(jsonData)
+    response = pd.read_json(stockUrl)
     return response
 
 quote2 = GetPrice("MU")
