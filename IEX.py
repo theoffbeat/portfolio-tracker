@@ -67,7 +67,8 @@ def GetCurrentPrice2(ticker):
         print("Time: {} Price: {}".format(timeUS, quote))
         time.sleep(15)
         
-        ser[timeUS] = price
+        #no need for this
+        #ser[timeUS] = price
         
         price.append(quote)
         times.append(timeUS)
