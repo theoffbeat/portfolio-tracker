@@ -5,13 +5,15 @@ from kivy.properties import ObjectProperty
 
 
 import requests
+import json
 
 
 
 
 
 class AddLocationForm(BoxLayout):
-    seach_input = ObjectProperty()
+    search_input = ObjectProperty()
+    price_result = ObjectProperty()
     search_results = ObjectProperty()
     
     def MyTestMethod(self):
@@ -35,7 +37,21 @@ class AddLocationForm(BoxLayout):
         #for later to return the value
         #return price
         #print("The stock price: {0}".format(price))
-        self.search_results.text = price
+        self.price_result.text = price
+
+
+    def BestMatch(self):
+        searchStock =  "https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords={}&apikey=VC61"
+        ticker = str.upper(self.search_input.text)
+        searchUrl = searchStock.format(ticker)
+        request = requests.get(searchUrl)
+        response = json.loads(request.text)
+        
+        bm = response['bestMatches']
+        stocks = ["Symbol: {0} Name: {1}".format(tickers['1. symbol'], tickers['2. name']) for tickers in bm]
+        self.search_results.item_strings = stocks
+
+
 
 
 
@@ -43,7 +59,6 @@ class AddLocationForm(BoxLayout):
 
 
 class MarkoApp(App):
-    def test(self):
         pass
 
 

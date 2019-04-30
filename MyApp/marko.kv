@@ -5,6 +5,7 @@ AddLocationForm:
 <AddLocationForm>:
 	orientation: "vertical"
 	search_input: search_box
+	price_result: price_result_label
 	search_results: search_results_list
 	BoxLayout:
 		height: "40dp"
@@ -15,19 +16,22 @@ AddLocationForm:
 		Button:
 			text: "Search"
 			size_hint_x: 25
-			on_press: root.MyTestMethod()
-			on_press: root.UserPrice()
+			on_press: root.BestMatch()
 		Button:
-			text: "Current Location"
+			text: "Current Price"
 			size_hint_x: 25
+			on_press: root.UserPrice()
 	Label:
-		id: search_results_list
+		id: price_result_label
 		text:
 		height: "40dp"
 		size_hint_y: None
 	#in the previous Label, set the height to 40dp
 	#need the below label to create another widget to fill the rest of the window
-	Label:
+	ListView:
+		id: search_results_list
+		item_strings: []
+		#text:
 
 
 	
