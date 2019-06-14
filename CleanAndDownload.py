@@ -94,8 +94,16 @@ class GetTickers:
         else:
             print('Error')
         
-            
-    
+    def RenameColumns(self, dataframe):
+        #renames the columns to open, high, low, close
+        holding = {}
+        for name in dataframe.columns:
+            holding[name] = name[3:]
+        #might need to indent this too
+            for keys, values in holding.items():
+                dataframe.rename(columns={keys : values}, inplace=True)
+
+        return dataframe
     
     
     response = {}
@@ -122,7 +130,23 @@ class GetTickers:
         
         #finally drops the 'Meta Data' rows by dropping NAN, because they contain NAN
         stockDF2.dropna(axis=0, inplace=True)
+        
+        stockDF2 = self.RenameColumns(stockDF2)
+        
+        
         return stockDF2
+    
+    def OpenHighLowCloseData(self, frame):
+        ohlc = ['open', 'high', 'low', 'close']
+        frame = frame[ohlc]
+        return frame
+    
+    
+    def DownloadAndCleanOHLC(self, frame):
+        frame = self.OpenHighLowCloseData(frame)
+        return frame
+    
+    
     
     
     #this is the slower verision because it downloads twice
@@ -197,10 +221,90 @@ class GetTickers:
    
 
     
-#down10 = GetTickers()    
-#f10 = down10.DownloadAndClean('daily', 'F')
-#
-#
+down10 = GetTickers()    
+f10 = down10.DownloadAndClean('daily', 'F')
+
+
+
+f12 = down10.DownloadAndClean('daily', 'F')
+
+
+f11 = f10.copy(deep=True)
+
+#Intraday
+down01 = GetTickers()
+intraDay = down01.DownloadAndClean('intraDay', 'BAC', 'one')
+f1 = intraDay.copy(deep=True)
+
+
+#Daily
+down02 = GetTickers()
+daily = down02.DownloadAndClean('daily', 'BAC')
+
+
+#Daily Adjusted
+down03 = GetTickers()
+dailyAdjusted = down03.DownloadAndClean('dailyAdjusted', 'BAC')
+da = down03.OpenHighLowCloseData(dailyAdjusted)
+
+da = down03.DownloadAndCleanOHLC(dailyAdjusted)
+
+
+
+#Weekly
+down04 = GetTickers()
+weekly = down04.DownloadAndClean('weekly', 'BAC')
+
+
+#Weekly Adjusted
+down05 = GetTickers()
+weeklyAdjusted = down05.DownloadAndClean('weeklyAdjusted', 'BAC')
+
+
+#Monthly
+down06 = GetTickers()
+monthly = down06.DownloadAndClean('monthly', 'BAC')
+
+
+#Monthly Adjusted
+down07 = GetTickers()
+monthlyAdjusted = down07.DownloadAndClean('monthlyAdjusted', 'BAC')
+
+
+
+
+dasub = da['2019-05-31':]
+
+#testing appends, but not duplicating the data
+
+da1 = dasub.iloc[0:6]
+da2 = dasub.iloc[4:]
+
+
+
+
+
+#stack overflow, this worked
+da3 = da1.reset_index().merge(da2.reset_index(), how='outer').set_index('index')
+
+
+
+
+
+da3[da3 == dasub]
+#should return True if the 2 dataframes match
+test = da3 == dasub
+
+
+
+
+
+
+
+
+
+
+
 #down11 = GetTickers()
 #f11 = down11.DownloadAndClean('intraDay', 'AAPL', 'one')
 #
